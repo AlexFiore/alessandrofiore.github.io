@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trello Alessandro</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="column" id="toDoColumn">
+        <h2>À faire</h2>
+        <div class="button-container">
+            <button class="add-button" onclick="openPopup(this.parentNode.parentNode)">Nouveau devoir</button>
+        </div>
+    </div>
+    
+    <div class="column" id="completedColumn">
+        <h2>Completée</h2>
+    </div>
+
+    <div id="popup" class="popup"> <!-- Popup devoir -->
+
+        <div class="popup-content">
+            <span class="close" onclick="closePopup()">&times;</span>
+            <input type="text" id="titre" placeholder="Titre">
+            <input type="text" id="description" placeholder="Description">
+            <input type="text" id="categorie" placeholder="Categorie">
+            <button id="addOrUpdateButton" onclick="addToDo()">Ajouter</button>
+        </div>
+    </div>
+
+    <button class="add-column-button" onclick="openColumnPopup()">+</button>  <!-- Nouveau devoir btn -->
+
+
+    <div id="columnPopup" class="popup">
+        <div class="popup-content">
+            <span class="close" onclick="closeColumnPopup()">&times;</span>
+            <input type="text" id="columnTitle" placeholder="Titre de la colonne"> <!-- Bouton + colonne -->
+
+            <button onclick="addColumn()">Ajouter colonne</button>
+        </div>
+    </div>
+
+    <script>
+        function openPopup(column) {
+            currentColumn = column; // Reference a la colonne selectionée
+            document.getElementById("popup").style.display = "block";
+        }
+
+        function closePopup() {
+            document.getElementById("popup").style.display = "none";
+        }
+
+        function addToDo() {  //Créer nouveau devoir
+            let titre = document.getElementById("titre").value;
+            let description = document.getElementById("description").value;
+            let categorie = document.getElementById("categorie").value;
+            if (titre && description && categorie) {
+                let newItem = document.createElement("div");
+                newItem.className = "task";
+                newItem.innerHTML = "<h3>" + titre + "</h3><h4>" + description + "</h4><h5>" + categorie + "</h5><button class='delete-button' onclick='deleteTask(event, this.parentNode)'>Supprimer</button>";
+                newItem.onclick = function(event) {
+                    
+                    
+                    if (!event.target.matches("button")) { //MaJ
+                        openPopup();
+
+                        // Remplir les champs avec l'info de la task selectionee
+                        document.getElementById("titre").value = titre;
+                        document.getElementById("description").value = description;
+                        document.getElementById("categorie").value = categorie;
+
+                        // Btn metter a jour
+                        document.getElementById("addOrUpdateButton").innerText = "Update";
+                    }
+                };
+                currentColumn.appendChild(newItem); // Ajouter element a la colonne
+                closePopup();
+            } else {
+                alert("Merci de compléter tous les champs.");
+            }
+        }
+
+        function deleteTask(event, taskNode) { //effacer task
+            event.stopPropagation(); 
+            taskNode.remove();
+        }
+
+        function openColumnPopup() {
+            document.getElementById("columnPopup").style.display = "block";
+        }
+
+        function closeColumnPopup() {
+            document.getElementById("columnPopup").style.display = "none";
+        }
+
+        function addColumn() {  //ajouter colonne
+            let columnTitle = document.getElementById("columnTitle").value;
+            if (columnTitle) {
+                let newColumn = document.createElement("div");
+                newColumn.className = "column";
+                newColumn.id = columnTitle; // le titre de la colonne sera son nouveau ID
+                newColumn.innerHTML = "<h2>" + columnTitle + "</h2><div class='button-container'><button class='add-button' onclick='openPopup(this.parentNode.parentNode)'>Nouveau devoir</button></div>";
+                document.body.insertBefore(newColumn, document.getElementById("columnPopup"));
+                closeColumnPopup();
+            } else {
+                alert("Veuillez saisir un titre de colonne.");
+            }
+        }
+    </script>
+</body>
+</html>
